@@ -56,7 +56,16 @@ class Parking {
       console.log(`Slot number ${slotNumber} is free`);
    }
 
-   status() {
+   statusInteractiveInput() {
+      console.log('Slot No.\nRegistration NoColour');
+      this.slots.forEach(slot => {
+         if (slot.occupied) {
+            console.log(`${slot.number}\n${slot.registrationNumber}\n${slot.color}`);
+         }
+      });
+   }
+
+   statusInputFromFiles() {
       console.log('Slot No. Registration No Colour');
       this.slots.forEach(slot => {
          if (slot.occupied) {
@@ -64,6 +73,7 @@ class Parking {
          }
       });
    }
+
 
    getRegistrationNumbersByColor(color) {
       const registrationNumbers = this.slots.filter(slot => slot.occupied && slot.color === color)
@@ -81,12 +91,10 @@ class Parking {
       const slotNumber = this.slots.find(slot => slot.occupied && slot.registrationNumber === registrationNumber)?.number || 'Not found';
       console.log(slotNumber);
    }
-
-
 }
-function processCommands(commands) {
+// Input From Files
+function processCommandsInputFromFiles(commands) {
    const parkingLot = new Parking();
-
    commands.forEach(command => {
       const [action, ...args] = command.split(' ');
       switch (action) {
@@ -100,7 +108,7 @@ function processCommands(commands) {
             parkingLot.exitParking(parseInt(args[0]));
             break;
          case 'status':
-            parkingLot.status();
+            parkingLot.statusInputFromFiles();
             break;
          case 'registration_numbers_for_cars_with_colour':
             parkingLot.getRegistrationNumbersByColor(args[0]);
@@ -116,11 +124,12 @@ function processCommands(commands) {
       }
    });
 }
-
 function processInputFromFile(fileName) {
    const commands = fs.readFileSync(fileName, 'utf8').trim().split('\n');
-   processCommands(commands);
+   processCommandsInputFromFiles(commands);
 }
+
+//Interactive commands input
 function processInteractiveInput() {
    const rl = readline.createInterface({
       input: process.stdin,
@@ -130,7 +139,7 @@ function processInteractiveInput() {
    console.log('Please input your commands: ("exit" to quit)');
    rl.on('line', input => {
       const [action, ...args] = input.split(' ');
-      const commandFunction = commandMappings[action];
+      const commandFunction = commandMappingsInput[action];
       if (commandFunction) {
          commandFunction(args);
       } else {
@@ -141,13 +150,12 @@ function processInteractiveInput() {
       }
    });
 }
-
 const parking = new Parking();
-const commandMappings = {
+const commandMappingsInput = {
    'create_parking_lot': args => parking.initializeParking(parseInt(args[0])),
    'park': args => parking.entranceParking(args[0], args[1]),
    'leave': args => parking.exitParking(parseInt(args[0])),
-   'status': () => parking.status(),
+   'status': () => parking.statusInteractiveInput(),
    'registration_numbers_for_cars_with_colour': args => parking.getRegistrationNumbersByColor(args[0]),
    'slot_numbers_for_cars_with_colour': args => parking.getSlotNumbersByColor(args[0]),
    'slot_number_for_registration_number': args => parking.getSlotNumberByRegistrationNumber(args[0])
