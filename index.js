@@ -55,11 +55,30 @@ class Parking {
       console.log('Slot No.');
       console.log('Registration No Colour');
       this.slots.forEach(slot => {
-          if (slot.occupied) {
-              console.log(`${slot.number} ${slot.registrationNumber} ${slot.color}`);
-          }
+         if (slot.occupied) {
+            console.log(`${slot.number} ${slot.registrationNumber} ${slot.color}`);
+         }
       });
-  }
+   }
+
+   getRegistrationNumbersByColor(color) {
+      const registrationNumbers = this.slots.filter(slot => slot.occupied && slot.color === color)
+         .map(slot => slot.registrationNumber);
+      console.log(registrationNumbers.join(', '));
+   }
+
+   getSlotNumbersByColor(color) {
+      const slotNumbers = this.slots.filter(slot => slot.occupied && slot.color === color)
+         .map(slot => slot.number);
+      console.log(slotNumbers.join(', '));
+   }
+
+   getSlotNumberByRegistrationNumber(registrationNumber) {
+      const slotNumber = this.slots.find(slot => slot.occupied && slot.registrationNumber === registrationNumber)?.number || 'Not found, please try again!';
+      console.log(slotNumber);
+   }
+
+
 }
 
 function processCommandsFromFile(fileName) {
