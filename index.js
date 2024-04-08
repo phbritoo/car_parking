@@ -4,7 +4,6 @@ const readline = require('readline');
 class Parking {
    constructor() {
       this.slots = [];
-      this.slots = [];
       this.registrationNumbersByColor = {};
       this.slotNumbersByColor = {};
       this.slotNumberByRegistrationNumber = {};
@@ -24,6 +23,12 @@ class Parking {
       availableSlot.occupied = true;
       availableSlot.registrationNumber = registrationNumber;
       availableSlot.color = color;
+
+      this.registrationNumbersByColor[color] = this.registrationNumbersByColor[color] || [];
+      this.registrationNumbersByColor[color].push(registrationNumber);
+      this.slotNumbersByColor[color] = this.slotNumbersByColor[color] || [];
+      this.slotNumbersByColor[color].push(availableSlot.number);
+      this.slotNumberByRegistrationNumber[registrationNumber] = availableSlot.number;
       console.log(`Allocated slot number: ${availableSlot.number}`);
    }
 
@@ -52,8 +57,7 @@ class Parking {
    }
 
    status() {
-      console.log('Slot No.');
-      console.log('Registration No Colour');
+      console.log('Slot No. Registration No Colour');
       this.slots.forEach(slot => {
          if (slot.occupied) {
             console.log(`${slot.number} ${slot.registrationNumber} ${slot.color}`);
@@ -74,7 +78,7 @@ class Parking {
    }
 
    getSlotNumberByRegistrationNumber(registrationNumber) {
-      const slotNumber = this.slots.find(slot => slot.occupied && slot.registrationNumber === registrationNumber)?.number || 'Not found, please try again!';
+      const slotNumber = this.slots.find(slot => slot.occupied && slot.registrationNumber === registrationNumber)?.number || 'Not found';
       console.log(slotNumber);
    }
 
@@ -105,7 +109,7 @@ function processCommands(commands) {
             parkingLot.getSlotNumbersByColor(args[0]);
             break;
          case 'slot_number_for_registration_number':
-            parkingLot.getRegistrationNumbersByColor(args[0]);
+            parkingLot.getSlotNumberByRegistrationNumber(args[0]);
             break;
          default:
             console.log('Invalid command');
@@ -115,8 +119,7 @@ function processCommands(commands) {
 
 function processInputFromFile(fileName) {
    const commands = fs.readFileSync(fileName, 'utf8').trim().split('\n');
-   const parking = new Parking();
-   processCommands(commands, parking);
+   processCommands(commands);
 }
 
 function processInteractiveInput() {
