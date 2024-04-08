@@ -80,19 +80,61 @@ class Parking {
 
 
 }
+function processCommands(commands, parking) {
+   const commandMappings = {
+      'create_parking_lot': args => parking.initializeParking(parseInt(args[0])),
+      'park': args => parking.parkingEntrance(args[0], args[1]),
+      'leave': args => parking.parkingExit(parseInt(args[0])),
+      'status': () => parking.status(),
+      'registration_numbers_for_cars_with_colour': args => parking.getRegistrationNumbersByColor(args[0]),
+      'slot_numbers_for_cars_with_colour': args => parking.getSlotNumbersByColor(args[0]),
+      'slot_number_for_registration_number': args => parking.getSlotNumberByRegistrationNumber(args[0]),
+      'exit': () => { }
+   };
 
-function processCommandsFromFile(fileName) {
-
+   commands.forEach(command => {
+      const [action, ...args] = command.split(' ');
+      const commandFunction = commandMappings[action];
+      if (commandFunction) {
+         commandFunction(args);
+      } else {
+         console.log('Invalid command!');
+      }
+   });
 }
 
-function processInteractiveCommands() {
+function processInputFromFile(fileName) {
+   const commands = fs.readFileSync(fileName, 'utf8').trim().split('\n');
+   const parking = new Parking();
+   processCommands(commands, parking);
+}
 
+function processInteractiveInput() {
+   const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+   });
+
+   const parking = new Parking();
+   console.log('Interactive mode. Please input your commands:');
+   rl.on('line', input => {
+      const [action, ...args] = input.split(' ');
+      const commandFunction = commandMappings[action];
+      if (commandFunction) {
+         commandFunction(args);
+      } else {
+         console.log('Invalid command');
+      }
+      if (action === 'exit') {
+         rl.close();
+      }
+   });
 }
 
 const fileName = process.argv[2];
 if (fileName) {
-   processCommandsFromFile(fileName);
+   processInputFromFile(fileName);
 } else {
-   processInteractiveCommands();
+   processInteractiveInput();
 }
 
