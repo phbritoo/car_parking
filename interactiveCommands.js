@@ -1,8 +1,7 @@
 const readline = require('readline');
 const ParkingLot = require('./parkingLot');
 
-const parking = new ParkingLot(); // Definir aqui fora
-
+const parking = new ParkingLot();
 function processInteractiveCommands() {
    const rl = readline.createInterface({
       input: process.stdin,
@@ -12,14 +11,15 @@ function processInteractiveCommands() {
    console.log('Please input your commands: ("exit" to quit)');
    rl.on('line', input => {
       const [action, ...args] = input.split(' ');
+      if (action === 'exit') {
+         rl.close();
+         return;
+      }
       const commandFunction = interactiveCommandMappings[action];
       if (commandFunction) {
          commandFunction(args);
       } else {
          console.log('Invalid command');
-      }
-      if (action === 'exit') {
-         rl.close();
       }
    });
 }
