@@ -50,6 +50,16 @@ class Parking {
 
       console.log(`Slot number ${slotNumber} is free`);
    }
+
+   status() {
+      console.log('Slot No.');
+      console.log('Registration No Colour');
+      this.slots.forEach(slot => {
+          if (slot.occupied) {
+              console.log(`${slot.number} ${slot.registrationNumber} ${slot.color}`);
+          }
+      });
+  }
 }
 
 function processCommandsFromFile(fileName) {
