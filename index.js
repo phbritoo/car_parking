@@ -121,15 +121,13 @@ function processInputFromFile(fileName) {
    const commands = fs.readFileSync(fileName, 'utf8').trim().split('\n');
    processCommands(commands);
 }
-
 function processInteractiveInput() {
    const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
    });
 
-   const parking = new Parking();
-   console.log('Interactive mode. Please input your commands:');
+   console.log('Please input your commands: ("exit" to quit)');
    rl.on('line', input => {
       const [action, ...args] = input.split(' ');
       const commandFunction = commandMappings[action];
@@ -143,6 +141,17 @@ function processInteractiveInput() {
       }
    });
 }
+
+const parking = new Parking();
+const commandMappings = {
+   'create_parking_lot': args => parking.initializeParking(parseInt(args[0])),
+   'park': args => parking.entranceParking(args[0], args[1]),
+   'leave': args => parking.exitParking(parseInt(args[0])),
+   'status': () => parking.status(),
+   'registration_numbers_for_cars_with_colour': args => parking.getRegistrationNumbersByColor(args[0]),
+   'slot_numbers_for_cars_with_colour': args => parking.getSlotNumbersByColor(args[0]),
+   'slot_number_for_registration_number': args => parking.getSlotNumberByRegistrationNumber(args[0])
+};
 
 const fileName = process.argv[2];
 if (fileName) {
