@@ -12,22 +12,22 @@ class Parking {
 
    initializeParking(slotsCount) {
       this.slots = Array.from({ length: slotsCount }, (_, i) => ({ number: i + 1, occupied: false, registrationNumber: null, color: null }));
-      console.log(`>> Created a parking lot with ${slotsCount} slots`);
+      console.log(`Created a parking lot with ${slotsCount} slots`);
    }
 
-   parkingEntrance(registrationNumber, color) {
+   entranceParking(registrationNumber, color) {
       const availableSlot = this.slots.find(slot => !slot.occupied);
       if (!availableSlot) {
-         console.log('>> Sorry, parking lot is full :( ');
+         console.log('Sorry, parking lot is full');
          return;
       }
       availableSlot.occupied = true;
       availableSlot.registrationNumber = registrationNumber;
       availableSlot.color = color;
-      console.log(`>> Allocated slot number: ${availableSlot.number}`);
+      console.log(`Allocated slot number: ${availableSlot.number}`);
    }
 
-   parkingExit(slotNumber) {
+   exitParking(slotNumber) {
       const slotIndex = slotNumber - 1;
       if (!this.slots[slotIndex] || !this.slots[slotIndex].occupied) {
          console.log(`Slot number ${slotNumber} is already free`);
@@ -80,25 +80,35 @@ class Parking {
 
 
 }
-function processCommands(commands, parking) {
-   const commandMappings = {
-      'create_parking_lot': args => parking.initializeParking(parseInt(args[0])),
-      'park': args => parking.parkingEntrance(args[0], args[1]),
-      'leave': args => parking.parkingExit(parseInt(args[0])),
-      'status': () => parking.status(),
-      'registration_numbers_for_cars_with_colour': args => parking.getRegistrationNumbersByColor(args[0]),
-      'slot_numbers_for_cars_with_colour': args => parking.getSlotNumbersByColor(args[0]),
-      'slot_number_for_registration_number': args => parking.getSlotNumberByRegistrationNumber(args[0]),
-      'exit': () => { }
-   };
+function processCommands(commands) {
+   const parkingLot = new Parking();
 
    commands.forEach(command => {
       const [action, ...args] = command.split(' ');
-      const commandFunction = commandMappings[action];
-      if (commandFunction) {
-         commandFunction(args);
-      } else {
-         console.log('Invalid command!');
+      switch (action) {
+         case 'create_parking_lot':
+            parkingLot.initializeParking(parseInt(args[0]));
+            break;
+         case 'park':
+            parkingLot.entranceParking(args[0], args[1]);
+            break;
+         case 'leave':
+            parkingLot.exitParking(parseInt(args[0]));
+            break;
+         case 'status':
+            parkingLot.status();
+            break;
+         case 'registration_numbers_for_cars_with_colour':
+            parkingLot.getRegistrationNumbersByColor(args[0]);
+            break;
+         case 'slot_numbers_for_cars_with_colour':
+            parkingLot.getSlotNumbersByColor(args[0]);
+            break;
+         case 'slot_number_for_registration_number':
+            parkingLot.getRegistrationNumbersByColor(args[0]);
+            break;
+         default:
+            console.log('Invalid command');
       }
    });
 }
