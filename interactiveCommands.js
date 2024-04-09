@@ -16,11 +16,7 @@ function processInteractiveCommands() {
          return;
       }
       const commandFunction = interactiveCommandMappings[action];
-      if (commandFunction) {
-         commandFunction(args);
-      } else {
-         console.log('Invalid command');
-      }
+      commandFunction ? commandFunction(args) : console.log('Invalid command, try again!');
    });
 }
 
